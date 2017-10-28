@@ -163,6 +163,40 @@ namespace ConsoleApplication1
 
             return xLarray;
         }
+
+        public static int interpolateBinary(double[] inp,double x,int column)
+        {
+            int searchIndex; double upperVal; double lowerVal; 
+            int index = Array.BinarySearch(inp, x);
+            double interpolatedValue;
+            
+
+                if(index>0)
+                {
+                    searchIndex=index;
+                }
+                else
+                {
+                    searchIndex=~index;
+                }
+            
+            
+            return searchIndex;
+        }
+
+        public List<double> arrayToList(double[,] inp, int column)
+        {
+            var retList = new List<double>();
+
+            int numRow = inp.GetLength(0);
+            //int numCol = inp.GetLength(1);
+            for (int i = 0; i <= numRow; i++)
+            {
+                retList.Add(inp[i, column-1]);
+            }
+
+            return retList;
+        }
     }
     class Program
     {
@@ -171,6 +205,17 @@ namespace ConsoleApplication1
             interpolate AAA = new interpolate();
             double[,] casingArr = AAA.pullCasingSpecsExcel();
             double[,] designLinesArr = AAA.pullDesignLinesExcel();
+
+            List<double> colDepths = AAA.arrayToList(designLinesArr, 1);
+
+            ////2d to 1d list (
+            //int numRow = designLinesArr.GetLength(0);
+            //int numCol = designLinesArr.GetLength(1);
+            //for (int i = 0; i < numRow; i++)
+            //{
+            //    for (int j = 0; j < numCol; j++)
+            //        list.Add(arr1[i, j]);
+            //}
 
             ////Test casing read from excel
             //for (int i = 0; i < casingArr.GetLength(0); i++)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using System.Threading.Tasks;
 using Excel = Microsoft.Office.Interop.Excel;
 using System.Runtime.InteropServices;
@@ -18,10 +19,10 @@ namespace ConsoleApplication1
             double[,] casingArr = AAA.pullCasingSpecsExcel();
             double[,] designLinesArr = AAA.pullDesignLinesExcel();
 
-            List<double> colDepths = AAA.arrayToList(designLinesArr, 1);
-            List<double> colDesign = AAA.arrayToList(designLinesArr, 2);
-            List<double> burDepths = AAA.arrayToList(designLinesArr, 3);
-            List<double> burDesign = AAA.arrayToList(designLinesArr, 4);
+            double[] colDepths = AAA.arrayTo1DArray(designLinesArr, 0);
+            double[] colDesign = AAA.arrayTo1DArray(designLinesArr, 1);
+            double[] burDepths = AAA.arrayTo1DArray(designLinesArr, 2);
+            double[] burDesign = AAA.arrayTo1DArray(designLinesArr, 3);
             
 
             // Inputs:
@@ -42,17 +43,44 @@ namespace ConsoleApplication1
                             trajectory BBB = new trajectory();
                             double[,] trajectoryarray = BBB.buildTrajectory(KOP,DLS,buildsection,finalinclination,MD,intervalstep);
 
-                            List<double> trajMD = AAA.arrayToList(trajectoryarray, 1);
-                            List<double> trajAngles = AAA.arrayToList(trajectoryarray, 2);
+                            double[] trajMD = AAA.arrayTo1DArray(trajectoryarray, 0);
+                            double[] trajAngles = AAA.arrayTo1DArray(trajectoryarray, 1);
+
                                 //List<double> burDepths = AAA.arrayToList(trajectoryarray, 3);
                                 //List<double> burDesign = AAA.arrayToList(trajectoryarray, 4);
                         
                         // Create new solution array
-                            double[,] solArray = new double[trajMD.Count, 17];
+                            double[,] solArray = new double[trajMD.GetLength(0), 17];
                         
                         //Populate it with MD and inclination angles
                             BBB.poptrajincline(ref solArray,ref trajMD,ref trajAngles);
-                                
+
+
+
+                            //Write solArray to file
+
+                            string textfilepath = @"D:\Completions\HW5path.txt";
+                            
+                            using (StreamWriter outfile = new StreamWriter(textfilepath))
+                            {
+                                for (int x = 0; x < solArray.GetLength(0); x++)
+                                {
+                                    string content = "";
+                                    for (int y = 0; y < 17; y++)
+                                    {
+                                        content += solArray[x, y].ToString("0.000") + ";";
+                                    }
+                                    outfile.WriteLine(content);
+                                }
+                            }
+
+
+
+
+
+
+
+
                                 ////ind 0:  Column 1:   MD
                                 //    for (int mdA=0;mdA<=trajMD.Count-1;mdA++)
                                 //    {
@@ -124,7 +152,7 @@ namespace ConsoleApplication1
 
 
                         //    'Set current row to bottom of sheet
-                               atRow = trajMD.Count;
+                               atRow = trajMD.GetLength(0);
     
                         //    Open "D:\Completions\HW5\HW5Log.txt" For Output As #1
                         //    Print #1, "StartLog"

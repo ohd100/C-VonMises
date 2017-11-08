@@ -176,17 +176,19 @@ namespace ConsoleApplication1
             return searchIndex;
         }
 
-        public List<double> arrayToList(double[,] inp, int column)
+        public double[] arrayTo1DArray(double[,] inp, int column)
         {
-            var retList = new List<double>();
-
             int numRow = inp.GetLength(0);
-            //int numCol = inp.GetLength(1);
-            for (int i = 0; i <= numRow - 1; i++)
-            {
-                retList.Add(inp[i, column - 1]);
-            }
+            var retList = new double[numRow];
 
+            
+            //int numCol = inp.GetLength(1);
+            for (int i = 0; i < numRow ; i++)
+            {
+                retList[i]=inp[i,column];
+            }
+            numRow = 0;
+            
             return retList;
         }
     }
@@ -249,17 +251,17 @@ namespace ConsoleApplication1
                 return trajectory;
         }
         
-        public void poptrajincline(ref double[,] solArray, ref List<double> trajMD, ref List<double> trajAngles)
+        public void poptrajincline(ref double[,] solArray, ref double[] trajMD, ref double[] trajAngles)
         {
             //ind 0:  Column 1:   MD
-            for (int mdA = 0; mdA <= trajMD.Count - 1; mdA++)
+            for (int mdA = 0; mdA < trajMD.GetLength(0); mdA++)
             {
                 solArray[mdA, 0] = trajMD[mdA];
             }
             //ind 1:  Column 2:   Inclination angle
-            for (int trA = 0; trA <= trajAngles.Count - 1; trA++)
+            for (int trA = 0; trA < trajAngles.GetLength(0); trA++)
             {
-                solArray[trA, 0] = trajAngles[trA];
+                solArray[trA, 1] = trajAngles[trA];
             }
         }
     }

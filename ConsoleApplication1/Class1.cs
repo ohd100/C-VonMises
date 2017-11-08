@@ -248,5 +248,28 @@ namespace ConsoleApplication1
 
                 return trajectory;
         }
+        
+        public void poptrajincline(ref double[,] solArray, ref List<double> trajMD, ref List<double> trajAngles)
+        {
+            //ind 0:  Column 1:   MD
+            for (int mdA = 0; mdA <= trajMD.Count - 1; mdA++)
+            {
+                solArray[mdA, 0] = trajMD[mdA];
+            }
+            //ind 1:  Column 2:   Inclination angle
+            for (int trA = 0; trA <= trajAngles.Count - 1; trA++)
+            {
+                solArray[trA, 0] = trajAngles[trA];
+            }
+        }
+    }
+
+    public class checks
+    {
+        public double maxCasing(int currRow)
+        {
+            //Worksheets("Trajectory").Cells(currRow, 6) = WorksheetFunction.Max(Worksheets("Trajectory").Cells(currRow, 4), Worksheets("Trajectory").Cells(currRow, 5))
+            return 1.0;
+        }
     }
 }

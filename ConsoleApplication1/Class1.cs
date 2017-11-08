@@ -260,6 +260,68 @@ namespace ConsoleApplication1
             }
         }
 
+        public void initCasingPicks(ref double[,] solArray, ref double[] burDepths, ref double[] burDesign, ref double[] casNum, ref double[] casPI, ref double SFinternalyield)
+        {
+                //Initial burst and collapse casing picks (equivalent to initCasingDesign in VBA)
+                int indexBinary; 
+                int solarraylength = solArray.GetLength(0);
+                double burlin;
+                int lastrow=casNum.GetLength(0);
+                double munge;
+                int k=lastrow;
+    
+                    //    j = Worksheets("Trajectory").UsedRange.Rows.Count
+                    //    m = Worksheets("CasingInputs").UsedRange.Rows.Count
+
+    
+                    //    k = m
+                
+                for(int a = 0; a < solarraylength; a++)
+                {
+                    k = lastrow;
+                    burlin = solArray[a, 7];
+                    munge = casPI[k-1]/SFinternalyield - burlin;
+                    while (munge >= 0 && k <= lastrow && k > 1)
+                    {
+                        solArray[a, 3] = k;
+                        k = k - 1;
+                        if (k == 1)
+                        {
+                            if((casPI[k-1] / SFinternalyield) - burlin>0)
+                            {
+                                solArray[a, 3] = 1;
+                            }
+                            break;
+                        }
+                        munge = (casPI[k-1] / SFinternalyield) - burlin;
+                        //Console.WriteLine(munge);
+                        //Console.WriteLine(casPI[k - 1] / SFinternalyield);
+                        //Console.ReadLine();
+                    }
+                    k = lastrow;            
+                }
+            
+                    //    For i = 3 To j  'burst
+                    //        k = m
+                    //        burlin = Worksheets("Trajectory").Cells(i, 8).Value
+                    //        munge = Worksheets("CasingInputs").Cells(k, 3).Value / SFinternalyield - burlin
+                    //        Do While munge >= 0 And k <= m And k > 1
+                    //            Worksheets("Trajectory").Cells(i, 4) = k - 1
+                    //            k = k - 1
+                    //            If (k = 1) Then Exit Do
+                    //            munge = CDbl(Worksheets("CasingInputs").Cells(k, 3).Value) / SFinternalyield - burlin
+                    //        Loop
+                    //        k = m
+                    //    Next i
+
+    
+
+                    //    For i = 3 To j  'collapse
+                    //           'Worksheets("Trajectory").Cells(i, 4) = 1
+                    //            Worksheets("Trajectory").Cells(i, 5) = 1
+                    //    Next i
+        }
+
     }
 
     public class trajectory

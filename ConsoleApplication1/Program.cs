@@ -54,10 +54,10 @@ namespace ConsoleApplication1
                         
                         //Populate it with MD and inclination angles
                             BBB.poptrajincline(ref solArray,ref trajMD,ref trajAngles);
-                            AAA.collapseP(ref double[,] solArray, ref double[] colDepths, ref double[] colDesign);
+                            AAA.collapseP(ref solArray, ref colDepths, ref colDesign);
+                            AAA.burstP(ref solArray, ref burDepths, ref burDesign);
 
-
-                            //Write solArray to file
+                        //Write solArray to file
 
                             string textfilepath = @"D:\Completions\HW5path.txt";
                             

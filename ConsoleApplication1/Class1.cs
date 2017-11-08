@@ -194,7 +194,7 @@ namespace ConsoleApplication1
 
         public void collapseP(ref double[,] solArray, ref double[] colDepths, ref double[] colDesign)
         {
-            //Initial burst and collapse casing picks (equivalent to initCasingDesign in VBA)
+            //Collapse design lines in solArray
             int indexBinary;
             double lessP;
             double greaterP;
@@ -202,12 +202,13 @@ namespace ConsoleApplication1
             double greaterD;
             double slope;
             double currDepth;
+            int solarraylength = solArray.GetLength(0);
 
-            for (int a = 0; a<=solArray.GetLength(0); a++)
+            for (int a = 0;a<solarraylength; a++)
             {
                 currDepth=solArray[a,0];
 
-                indexBinary = colDepths.BinarySearch(solArray,currDepth);
+                indexBinary = Array.BinarySearch(colDepths,currDepth);
                 if (indexBinary < 0)
                 {
                     lessP=colDesign[~indexBinary-1];
@@ -221,6 +222,40 @@ namespace ConsoleApplication1
                 else
                 {
                     solArray[a, 6]=colDesign[indexBinary];
+                }
+            }
+        }
+
+        public void burstP(ref double[,] solArray, ref double[] burDepths, ref double[] burDesign)
+        {
+            //Burst design lines in solArray
+            int indexBinary;
+            double lessP;
+            double greaterP;
+            double lessD;
+            double greaterD;
+            double slope;
+            double currDepth;
+            int solarraylength = solArray.GetLength(0);
+
+            for (int a = 0; a < solarraylength; a++)
+            {
+                currDepth = solArray[a, 0];
+
+                indexBinary = Array.BinarySearch(burDepths, currDepth);
+                if (indexBinary < 0)
+                {
+                    lessP = burDesign[~indexBinary - 1];
+                    greaterP = burDesign[~indexBinary];
+                    lessD = burDepths[~indexBinary - 1];
+                    greaterD = burDepths[~indexBinary];
+
+                    slope = ((greaterP - lessP) / (greaterD - lessD));
+                    solArray[a, 7] = slope * (currDepth - lessD) + lessP;
+                }
+                else
+                {
+                    solArray[a, 7] = burDesign[indexBinary];
                 }
             }
         }
@@ -260,28 +295,6 @@ namespace ConsoleApplication1
                         trajectory[j-1, 1] = trajectory[j - 2, 1] + (DLS / 100) * intervalstep;
                     }   
                 }
-                    
-
-
-                //i = 1
-                //j = 1
-
-                //'Populating MDs in trajectory array
-                //For i = 1 To numsteps + 1
-                //    trajectory(i, 1) = (i - 1) * intervalstep
-                //Next i
-
-
-                //'Populating inclination angles
-                //For j = 1 To numsteps + 1
-                //    If trajectory(j, 1) < KOP Then
-                //        trajectory(j, 2) = 0
-                //    ElseIf trajectory(j, 1) > endbuild Then
-                //        trajectory(j, 2) = finalinclination
-                //    Else: trajectory(j, 2) = trajectory(j - 1, 2) + (DLS / 100) * intervalstep
-                //    End If
-                //Next j
-
                 return trajectory;
         }
         

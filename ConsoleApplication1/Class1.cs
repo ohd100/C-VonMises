@@ -191,6 +191,40 @@ namespace ConsoleApplication1
             
             return retList;
         }
+
+        public void collapseP(ref double[,] solArray, ref double[] colDepths, ref double[] colDesign)
+        {
+            //Initial burst and collapse casing picks (equivalent to initCasingDesign in VBA)
+            int indexBinary;
+            double lessP;
+            double greaterP;
+            double lessD;
+            double greaterD;
+            double slope;
+            double currDepth;
+
+            for (int a = 0; a<=solArray.GetLength(0); a++)
+            {
+                currDepth=solArray[a,0];
+
+                indexBinary = colDepths.BinarySearch(solArray,currDepth);
+                if (indexBinary < 0)
+                {
+                    lessP=colDesign[~indexBinary-1];
+                    greaterP=colDesign[~indexBinary];
+                    lessD=colDepths[~indexBinary-1];
+                    greaterD=colDepths[~indexBinary];
+                    
+                    slope=((greaterP-lessP)/(greaterD-lessD));
+                    solArray[a, 6] = slope * (currDepth - lessD) + lessP;
+                }
+                else
+                {
+                    solArray[a, 6]=colDesign[indexBinary];
+                }
+            }
+        }
+
     }
 
     public class trajectory

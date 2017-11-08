@@ -54,7 +54,7 @@ namespace ConsoleApplication1
                         
                         //Populate it with MD and inclination angles
                             BBB.poptrajincline(ref solArray,ref trajMD,ref trajAngles);
-
+                            AAA.collapseP(ref double[,] solArray, ref double[] colDepths, ref double[] colDesign);
 
 
                             //Write solArray to file
@@ -74,23 +74,6 @@ namespace ConsoleApplication1
                                 }
                             }
 
-
-
-
-
-
-
-
-                                ////ind 0:  Column 1:   MD
-                                //    for (int mdA=0;mdA<=trajMD.Count-1;mdA++)
-                                //    {
-                                //        solArray[mdA,0]=trajMD[mdA];
-                                //    }
-                                ////ind 1:  Column 2:   Inclination angle
-                                //    for (int trA = 0; trA <= trajAngles.Count - 1; trA++)
-                                //    {
-                                //        solArray[trA, 0] = trajAngles[trA];
-                                //    }
                                 //ind 2:  Column 3:   Weight at point
                                 //ind 3:  Column 4:   CasingType_Burst
                                 //ind 4:  Column 5:   CasingType_Collapse

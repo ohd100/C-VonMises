@@ -8,9 +8,33 @@ using System.Runtime.InteropServices;
 
 namespace ConsoleApplication1
 {
-    public class radtanStress
+    public class weight
     {
-        public static double radStress(double OD, double ID, double Pi, double Po, bool inwall)
+        public double spotWeight(double weightbelow, double casingtype, double MudWeight, double intervalstep, bool buoyed, double g, double BF)
+        {
+                   
+    
+                int i; double w; int j; int colnum;
+        
+
+
+                if(!buoyed)
+                {
+                    w = g * intervalstep;
+                }
+                else
+                {
+                    w = g * BF * intervalstep;
+                }
+                   
+                double spotWeight1 = weightbelow + w;
+                return spotWeight1;
+        }
+    }
+    
+    public class vmStress
+    {
+        public double radStress(double OD, double ID, double Pi, double Po, bool inwall)
         {
             double Ro; double Ri; double r;
             double a; double b;
@@ -41,7 +65,7 @@ namespace ConsoleApplication1
             //'Print #1, "sigR" & vbTab & radStress
         }
 
-        public static double tanStress(double OD, double ID, double Pi, double Po, bool inwall)
+        public double tanStress(double OD, double ID, double Pi, double Po, bool inwall)
         {
             double Ro; double Ri; double r;
             double a; double b;
@@ -71,6 +95,79 @@ namespace ConsoleApplication1
 
             return tanStress;
             //'Print #1, "sigR" & vbTab & radStress
+        }
+
+        public double bendingStress(double odconn, double odtub, double idtub, double DLS2, double P, int iscase1)
+        {
+            double r; double cp; double c; double l; double Po; double ccheck; double inertia; double Rp; double E; double k; double bendingstress1;
+
+            //    'OD, ID in inches
+            //    'DLS in deg/100ft
+            //    ' 1 for iscase1 returns value for case 1
+    
+            //    'half length of pipe[in] and Young's modulus [psi] set below...change only if necessary
+                l = 180;
+                E = 30 * Math.Pow(10,6);
+                inertia = (Math.PI / 64) * ((Math.Pow(odtub,4) - Math.Pow(idtub,4)));
+
+                r = 0.5 * (odconn - odtub);
+
+                Rp = 68755 / DLS2;
+                c = 1 / Rp;
+    
+                k = Math.Pow((P / (E * inertia)),0.5);
+            
+            //    'Test for case 2 or 3
+                ccheck = (r / (l*l)) / (0.5 - (Math.Cosh(k * l) - 1) / (k * l * Math.Sinh(k * l)));
+    
+    
+                if(iscase1 == 1)
+                {
+                    cp = c;
+                }
+                else if(c < ccheck)
+                {
+                    cp = c * k * l / Math.Tanh(k * l);
+                }
+                else if(c > ccheck)
+                {
+                    cp = (c * k * l * Math.Sinh(k * l) - (k * l) - (0.5 + r / ((l *l) * c)) * (k * l) * ((Math.Cosh(k * l) - 1))) / (2 * (Math.Cosh(k * l) - 1) - (k * l * Math.Sinh(k * l)));
+                }       
+                else
+                {
+                    cp = 0;
+                }
+                
+                bendingstress1 = (E * odtub * cp) / 2;
+                return bendingstress1;
+            //    'Print #1, "K" & vbTab & K
+            //    'Print #1, dblCosh
+            //    'Print #1, dblCosh
+        }
+
+        public void wBelow(ref double[,] solArray, double MW, double intervalstep, ref double[] casNum, ref double[] casW, int currRow)
+        {
+            int i; int w; int j; int colnum; double casingtype; double BF; double g;
+                 weight iii = new weight();
+            
+            //public double weight(double weightbelow, int casingtype, double MudWeight, double intervalstep, bool buoyed, double g)
+                            casingtype=solArray[currRow,5];
+                            BF = 1 - (MW / 65.5);
+                            j=Array.BinarySearch(casNum,casingtype);
+                            g=casW[j];
+
+                    i = solArray.GetLength(0)-1;
+
+                    if(currRow == i) 
+                    {
+                        solArray[currRow, 2] = 0;
+                    }
+                    else
+                    {
+                        solArray[currRow, 2] = iii.spotWeight(solArray[currRow + 1, 2], solArray[currRow, 5], MW, intervalstep, false, g, BF);
+                    }
+               
+                        
         }
 
     }
@@ -276,6 +373,7 @@ namespace ConsoleApplication1
     
                     //    k = m
                 
+                // Burst Casing Picks (initial)
                 for(int a = 0; a < solarraylength; a++)
                 {
                     k = lastrow;
@@ -300,28 +398,18 @@ namespace ConsoleApplication1
                     }
                     k = lastrow;            
                 }
-            
-                    //    For i = 3 To j  'burst
-                    //        k = m
-                    //        burlin = Worksheets("Trajectory").Cells(i, 8).Value
-                    //        munge = Worksheets("CasingInputs").Cells(k, 3).Value / SFinternalyield - burlin
-                    //        Do While munge >= 0 And k <= m And k > 1
-                    //            Worksheets("Trajectory").Cells(i, 4) = k - 1
-                    //            k = k - 1
-                    //            If (k = 1) Then Exit Do
-                    //            munge = CDbl(Worksheets("CasingInputs").Cells(k, 3).Value) / SFinternalyield - burlin
-                    //        Loop
-                    //        k = m
-                    //    Next i
 
-    
-
-                    //    For i = 3 To j  'collapse
-                    //           'Worksheets("Trajectory").Cells(i, 4) = 1
-                    //            Worksheets("Trajectory").Cells(i, 5) = 1
-                    //    Next i
+            // Initial Collapse casing picks (pick weakest)
+                        for(int a = 0; a < solarraylength; a++)
+                        {
+                            solArray[a, 4] = 1;
+                        }                        
         }
 
+        public void maxCasing(ref double[,] solArray, int currRow)
+        {
+            solArray[currRow,5] = Math.Max(solArray[currRow,3], solArray[currRow,4]);
+        }
     }
 
     public class trajectory

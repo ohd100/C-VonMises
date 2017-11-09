@@ -120,7 +120,7 @@ namespace ConsoleApplication1
 
 
                         //    'Set current row to bottom of sheet
-                               atRow = trajMD.GetLength(0);
+                               atRow = trajMD.GetLength(0)-1;
     
                         //    Open "D:\Completions\HW5\HW5Log.txt" For Output As #1
                         //    Print #1, "StartLog"
@@ -129,8 +129,8 @@ namespace ConsoleApplication1
                         //    'for Last Row, set weight and max casing
                         //   For currRow = Worksheets("Trajectory").UsedRange.Rows.Count To 3 Step -1
                         //        Print #1, "MD= " & Worksheets("Trajectory").Cells(currRow, 1) & " FT"
-                        //        Call maxCasing(currRow)
-                        //        Call wBelow(currRow)
+                        // y       Call maxCasing(currRow)
+                        // y       Call wBelow(currRow)
                         //        Call collapseCheck(currRow)
                         //        Call correctedcollapseCheck(currRow)
                         //        Call burstCheck(currRow)
